@@ -2,18 +2,54 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+// il faut importer les classes Entreprise et EntityManagerInterface (et autres) en faisant clic droit
+// sur leur noms où elles sont appelées puis import Class (attention au bon package ! dans le bon namespace)
+use App\Entity\Entreprise;
+use Doctrine\ORM\EntityManager;
+use App\Repository\EntrepriseRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class EntrepriseController extends AbstractController
 {
+    // /entreprise est l'URL et son nom app_entreprise (pour les liens)
     #[Route('/entreprise', name: 'app_entreprise')]
-    public function index(): Response
+    // EntityManagerInterface va permettre d'accéder à un certain nombre de méthodes (notament getRepository)
+    // public function index(EntityManagerInterface $entityManager): Response
+
+    // autre méthode avec entrepriseRepository directement (importer la class !)
+    public function index(EntrepriseRepository $entrepriseRepository): Response
+    
     {
-       $entreprises = $entityManager->getRepository(Enterprise::class)->findAll();
+        // pour afficher les entreprises (getRepository se base sur l'entité Entreprise)
+    // $entreprises = $entityManager->getRepository(Entreprise::class)->findAll();
+
+        // suite de l'autre méthode 
+        // findBy avec critères (premier choix)
+        // findBy et trier (en deuxième choix (orderBy) -> voir la fonction dans EntrepriseRepository)
+        // Equivalent SQL = SELECT * FROM entreprise WHERE ville = 'Strasbourg' ORDER BY raisonSociale (par défaut ASC)
+    // $entreprises = $entrepriseRepository->findBy(["ville" => "STRASBOURG"], ["raisonSociale" => "ASC"]);
+       $entreprises = $entrepriseRepository->findBy([], ["raisonSociale" => "ASC"]);
+       // renvoie les informations dans la vue index
         return $this->render('entreprise/index.html.twig', [
+            // on passe la variable $entreprises à la vue (pour le tableau des entreprises)
             'entreprises' => $entreprises
+        ]);
+    }
+
+    // on veux afficher le détail d'une entreprise
+    // pas de même URL/nom ! on utilise l'id pour cibler une entreprise
+    #[Route('/entreprise/{id}', name: 'show_entreprise')]
+    // param converter, il s'agit de mettre le nom de la classe en argument de show pour que l'id soit trouvé comme clé primaire
+    public function show(Entreprise $entreprise): Response
+    {
+        // renvoie les informations dans la vue show
+        return $this->render('entreprise/show.html.twig', [
+            // on passe la variable $entreprise à la vue (pour une entreprise)
+            // vue à créer dans templates/entreprise
+            'entreprise' => $entreprise
         ]);
     }
 }

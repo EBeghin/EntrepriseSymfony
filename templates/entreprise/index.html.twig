@@ -5,8 +5,17 @@
 {% block body %}
     <h1>Liste des entreprises</h1>
 
-    {% for entreprise in entreprises %}
-        
+        {# on fait une bloucle for pour afficher chaque entreprises du tableau entreprises #}
+    {# {% for entreprise in entreprises %} #}
+        {# on récupère le getter raisonSociale avec un point sur l'éntité #}
+        {# on va concaténer (entre parenthèse) avec le ~ le cp et la ville #}      
+        {# {{ entreprise.raisonSociale ~ ' (' ~ entreprise.cp ~ ' ' ~ entreprise.ville ~ ')' }} <br> #}
+    {# {% endfor %} #}
+
+    {# autre méthode avec le toString créé dans entreprise #}
+    {% for entreprise in entreprises %} <br>
+        {# dans le lien, on précise que l'id est celui de entreprise #}
+        <a href="{{ path ('show_entreprise', {'id': entreprise.id}) }}">{{ entreprise }} </a><br> 
     {% endfor %}
 
     

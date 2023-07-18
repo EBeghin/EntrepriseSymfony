@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des employés{% endblock %}
+
+{% block body %}
+    <h1>Liste des employés</h1>
+
+    {% for employe in employes %}
+     {# on récupère le getter entreprise avec un point sur l'éntité #}
+     {# et comme on ne veux pas le toString, mais juste la raisonSociale, on fait un chainage (.) entre objets, puis l'attribut #}
+        <a href="{{ path('show_employe', {'id':employe.id}) }}">{{ employe }}</a> {{ employe.entreprise.raisonSociale}} <br>
+    {% endfor %}
+
+{% endblock %}

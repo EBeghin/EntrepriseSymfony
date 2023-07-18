@@ -30,6 +30,9 @@ class Employe
     #[ORM\JoinColumn(nullable: false)]
     private ?Entreprise $entreprise = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $ville = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -93,5 +96,35 @@ class Employe
         $this->entreprise = $entreprise;
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->prenom." ".$this->nom;
+        // si on veux associer l'entreprise a l'employé, mais on préfère le mettre dans la vue de l'employé
+        // return $this->prenom." ".$this->nom." ".$this->getEntreprise()->getRaisonSociale();
+    }
+
+    public function getVille(): ?string
+    {
+        return $this->ville;
+    }
+
+    public function setVille(?string $ville): static
+    {
+        $this->ville = $ville;
+
+        return $this;
+    }
+
+    // ajout d'une méthode qui calcul l'age d'un employé
+    public function getAge(): ?string
+    {
+        // on appel une class native de php avec l'antislash
+        $now = new \DateTime();
+        // calcul de la différence entre naissance et maintenant
+        $interval = $this->dateNaissance->diff($now);
+        // on formate en nombre d'années
+        return $interval->format("%Y");
     }
 }

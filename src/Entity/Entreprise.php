@@ -104,6 +104,12 @@ class Entreprise
         return $this;
     }
 
+    // on crée une fonction qui récupère l'adresse complète
+    public function getAdresseComplete(): ?string
+    {
+        return $this->adresse." ".$this->cp." ".$this->ville;
+    }
+
     /**
      * @return Collection<int, Employe>
      */
@@ -132,5 +138,12 @@ class Entreprise
         }
 
         return $this;
+    }
+
+    // on converti l'objet/tableau en string (en concaténant cp et ville)
+    public function __toString()
+    {
+        // return $this->raisonSociale. " (".$this->cp." ".$this->ville.")";
+        return $this->raisonSociale;
     }
 }
