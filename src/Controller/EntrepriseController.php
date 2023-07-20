@@ -5,9 +5,11 @@ namespace App\Controller;
 // il faut importer les classes Entreprise et EntityManagerInterface (et autres) en faisant clic droit
 // sur leur noms où elles sont appelées puis import Class (attention au bon package ! dans le bon namespace)
 use App\Entity\Entreprise;
+use App\Form\EntrepriseType;
 use Doctrine\ORM\EntityManager;
 use App\Repository\EntrepriseRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,6 +40,47 @@ class EntrepriseController extends AbstractController
             'entreprises' => $entreprises
         ]);
     }
+    
+    // création du formulaire pour créer une nouvelle entreprise
+    #[Route('/entreprise/new', name: 'new_entreprise')]
+    // on utilise le même formulaire pour éditer une entreprise
+    #[Route('/entreprise/{id}/edit', name: 'edit_entreprise')]
+    public function new_edit(Entreprise $entreprise = null, Request $request, EntityManagerInterface $entityManager): Response
+    {    
+        // on ajoute la condition si une entreprise n'existe pas
+        if(!$entreprise) {
+            // on crée un nouveau objet entreprise  
+            $entreprise = new Entreprise();
+        }
+
+
+        // on crée un formulaire à partir de EntrepriseType
+        $form = $this->createForm(EntrepriseType::class, $entreprise);
+
+        // on prend en charge la requête demandée de part le formulaire
+        $form->handleRequest($request);
+
+        // si le formulaire est soumi et qu'il est valide
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // récupération des données du formulaire
+            $entreprise = $form->getData();
+            // équivalent de prepare en PDO (prepare l'objet pour l'insertion en BDD)
+            $entityManager->persist($entreprise);
+            // équivalent d'execute en PDO (execute la requête) 
+            $entityManager->flush();
+
+            // alors on redirige vers la liste d'entreprise
+            return $this->redirectToRoute('app_entreprise');
+        }
+
+        // sinon on reste sur le formulaire d'ajout d'entreprise
+        return $this->render('entreprise/new.html.twig', [
+            'formAddEntreprise'=>$form,
+            // edit va envoyer l'id de l'entreprise a modifier ou sinon faux dans le cas d'une nouvelle entreprise
+            'edit' => $entreprise->getId()
+        ]);
+    }
 
     // on veux afficher le détail d'une entreprise
     // pas de même URL/nom ! on utilise l'id pour cibler une entreprise
@@ -52,4 +95,5 @@ class EntrepriseController extends AbstractController
             'entreprise' => $entreprise
         ]);
     }
+
 }

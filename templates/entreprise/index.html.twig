@@ -15,7 +15,9 @@
     {# autre méthode avec le toString créé dans entreprise #}
     {% for entreprise in entreprises %} <br>
         {# dans le lien, on précise que l'id est celui de entreprise #}
-        <a href="{{ path ('show_entreprise', {'id': entreprise.id}) }}">{{ entreprise }} </a><br> 
+        <a href="{{ path ('show_entreprise', {'id': entreprise.id}) }}">{{ entreprise }}</a>
+        {# ajout d'un bouton pour éditer une entreprise #}
+        <a class="btn btn-primary" href="{{ path ('edit_entreprise', {'id': entreprise.id}) }}">Editer</a><br> 
     {% endfor %}
 
     

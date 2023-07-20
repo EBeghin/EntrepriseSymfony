@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Employe;
+use App\Form\EmployeType;
 use App\Repository\EmployeRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +22,38 @@ class EmployeController extends AbstractController
         return $this->render('employe/index.html.twig', [
             // on passe la variable $employes à la vue
             'employes' => $employes
+        ]);
+    }
+
+    
+
+    // création du formulaire pour créer un nouveau employé
+    #[Route('/employe/new', name: 'new_employe')]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $employe = new Employe();
+
+        $form = $this->createForm(EmployeType::class, $employe);
+
+        // on prend en charge la requête demandée de part le formulaire
+        $form->handleRequest($request);
+
+        // si le formulaire est soumi et qu'il est valide
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // récupération des données du formulaire
+            $employe = $form->getData();
+            // équivalent de prepare en PDO (prepare l'objet pour l'insertion en BDD)
+            $entityManager->persist($employe);
+            // équivalent d'execute en PDO (execute la requête) 
+            $entityManager->flush();
+
+            // alors on redirige vers la liste d'employés
+            return $this->redirectToRoute('app_employe');
+        }
+
+        return $this->render('employe/new.html.twig', [
+            'formAddEmploye'=>$form,
         ]);
     }
 
